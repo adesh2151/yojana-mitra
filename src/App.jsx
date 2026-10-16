@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import { QUESTIONS } from './data/questions'
 import { SCHEMES } from './data/schemes'
@@ -6,30 +6,52 @@ import { matchSchemes } from './engine/match'
 import { LANGS, UI, t } from './i18n'
 import { canListen, canSpeak, listen, speak } from './speech'
 
+// Cross-app + distribution links (see also: public hub at HUB_URL).
+const HUB_URL = 'https://adesh2151.github.io/'
+const APK_URL = 'https://github.com/adesh2151/yojana-mitra/releases/download/apk/YojanaMitra.apk'
+
+const LS_PROFILE = 'ym_profile'
+const LS_LANG = 'ym_lang'
+const LS_SEEN = 'ym_seen_schemes'
+
+const SCREEN = { WELCOME: 'welcome', QUIZ: 'quiz', RESULTS: 'results', DETAIL: 'detail', BROWSE: 'browse' }
+
+// localStorage helpers — every access guarded (private mode / blocked storage).
+function lsGet(key, fallback) {
+  try {
+    const v = localStorage.getItem(key)
+    return v == null ? fallback : JSON.parse(v)
+  } catch {
+    return fallback
+  }
+}
+function lsSet(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    /* ignore */
+  }
+}
+
 // Convert Devanagari digits (०-९) to ASCII so spoken numbers parse.
 function toAsciiDigits(s) {
   return s.replace(/[०-९]/g, (d) => '०१२३४५६७८९'.indexOf(d))
 }
 
 // Map a spoken transcript to an answer for the given question.
-// Returns the value to set, or undefined if nothing matched.
 function matchVoice(q, transcript, lang) {
   const text = toAsciiDigits(transcript).toLowerCase()
-
   if (q.type === 'number') {
     const m = text.match(/\d{1,3}/)
     return m ? Math.max(q.min, Math.min(q.max, Number(m[0]))) : undefined
   }
-
   if (q.type === 'boolean') {
-    if (/\b(yes|yeah|हो|होय|हा)\b/.test(text)) return true
-    if (/\b(no|nope|नाही|ना)\b/.test(text)) return false
+    if (/\b(yes|yeah|हो|होय|हा|हाँ)\b/.test(text)) return true
+    if (/\b(no|nope|नाही|ना|नहीं)\b/.test(text)) return false
     return undefined
   }
-
-  // single / multi: match transcript against each option's labels
   const hit = q.options.find((o) => {
-    const labels = [t(o.label, lang), o.label.en, o.label.mr]
+    const labels = [t(o.label, lang), o.label.en, o.label.mr, o.label.hi]
       .filter(Boolean)
       .map((x) => x.toLowerCase())
     return labels.some((lab) => text.includes(lab) || lab.includes(text))
@@ -37,19 +59,34 @@ function matchVoice(q, transcript, lang) {
   return hit ? hit.value : undefined
 }
 
-const SCREEN = { WELCOME: 'welcome', QUIZ: 'quiz', RESULTS: 'results', DETAIL: 'detail' }
-
 export default function App() {
-  const [lang, setLang] = useState('mr')
+  const [lang, setLang] = useState(() => lsGet(LS_LANG, 'mr'))
   const [screen, setScreen] = useState(SCREEN.WELCOME)
   const [step, setStep] = useState(0)
-  const [profile, setProfile] = useState({})
+  const [profile, setProfile] = useState(() => lsGet(LS_PROFILE, {}))
   const [activeScheme, setActiveScheme] = useState(null)
+
+  useEffect(() => lsSet(LS_LANG, lang), [lang])
+  useEffect(() => lsSet(LS_PROFILE, profile), [profile])
 
   const results = useMemo(
     () => (screen === SCREEN.RESULTS ? matchSchemes(SCHEMES, profile) : null),
     [screen, profile],
   )
+
+  // Mark schemes the user hasn't seen before as NEW, then remember them.
+  const seen = lsGet(LS_SEEN, [])
+  const newIds = useMemo(() => {
+    if (!results) return new Set()
+    const shown = [...results.qualify, ...results.likely].map((s) => s.id)
+    return new Set(shown.filter((id) => !seen.includes(id)))
+  }, [results])
+  useEffect(() => {
+    if (!results) return
+    const shown = [...results.qualify, ...results.likely].map((s) => s.id)
+    lsSet(LS_SEEN, Array.from(new Set([...seen, ...shown])))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results])
 
   function restart() {
     setProfile({})
@@ -61,7 +98,9 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <span className="brand">🪔 {t(UI.appName, lang)}</span>
+        <span className="brand" onClick={() => setScreen(SCREEN.WELCOME)}>
+          🪔 {t(UI.appName, lang)}
+        </span>
         <div className="langs">
           {LANGS.map((l) => (
             <button
@@ -77,7 +116,11 @@ export default function App() {
 
       <main className="screen">
         {screen === SCREEN.WELCOME && (
-          <Welcome lang={lang} onStart={() => setScreen(SCREEN.QUIZ)} />
+          <Welcome
+            lang={lang}
+            onStart={() => setScreen(SCREEN.QUIZ)}
+            onBrowse={() => setScreen(SCREEN.BROWSE)}
+          />
         )}
 
         {screen === SCREEN.QUIZ && (
@@ -96,24 +139,32 @@ export default function App() {
           <Results
             lang={lang}
             results={results}
+            newIds={newIds}
             onOpen={(s) => {
               setActiveScheme(s)
               setScreen(SCREEN.DETAIL)
             }}
             onRestart={restart}
+            onBrowse={() => setScreen(SCREEN.BROWSE)}
           />
         )}
 
         {screen === SCREEN.DETAIL && activeScheme && (
-          <Detail
-            lang={lang}
-            scheme={activeScheme}
-            onBack={() => setScreen(SCREEN.RESULTS)}
-          />
+          <Detail lang={lang} scheme={activeScheme} onBack={() => setScreen(SCREEN.RESULTS)} />
+        )}
+
+        {screen === SCREEN.BROWSE && (
+          <BrowseAll lang={lang} onBack={() => setScreen(SCREEN.WELCOME)} />
         )}
       </main>
 
       <footer className="disclaimer">
+        <div className="footlinks">
+          <a href={APK_URL}>📱 {t(UI.getAndroid, lang)}</a>
+          <a href={HUB_URL} target="_blank" rel="noreferrer">
+            🧩 {t(UI.moreApps, lang)}
+          </a>
+        </div>
         {t(UI.disclaimer, lang)}
         <br />
         <a href="https://www.myscheme.gov.in" target="_blank" rel="noreferrer">
@@ -133,7 +184,7 @@ function SpeakBtn({ text, lang }) {
   )
 }
 
-function Welcome({ lang, onStart }) {
+function Welcome({ lang, onStart, onBrowse }) {
   return (
     <div className="welcome">
       <div className="hero">🪔</div>
@@ -142,6 +193,9 @@ function Welcome({ lang, onStart }) {
       <SpeakBtn text={t(UI.tagline, lang)} lang={lang} />
       <button className="cta" onClick={onStart}>
         {t(UI.start, lang)} →
+      </button>
+      <button className="ghost wide" onClick={onBrowse}>
+        🔎 {t(UI.browseAll, lang)}
       </button>
     </div>
   )
@@ -157,12 +211,10 @@ function Quiz({ lang, step, setStep, profile, setProfile, onDone, onBackToStart 
   function set(v) {
     setProfile({ ...profile, [q.id]: v })
   }
-
   function toggleMulti(v) {
     const cur = Array.isArray(value) ? value : []
     set(cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v])
   }
-
   function startVoice() {
     setHeard('')
     setListening(true)
@@ -178,12 +230,10 @@ function Quiz({ lang, step, setStep, profile, setProfile, onDone, onBackToStart 
       () => setListening(false),
     )
   }
-
   function next() {
     if (step + 1 < total) setStep(step + 1)
     else onDone()
   }
-
   function back() {
     if (step === 0) onBackToStart()
     else setStep(step - 1)
@@ -276,7 +326,7 @@ function Quiz({ lang, step, setStep, profile, setProfile, onDone, onBackToStart 
   )
 }
 
-function Results({ lang, results, onOpen, onRestart }) {
+function Results({ lang, results, newIds, onOpen, onRestart, onBrowse }) {
   const { qualify, likely } = results
   const empty = qualify.length === 0 && likely.length === 0
 
@@ -290,7 +340,7 @@ function Results({ lang, results, onOpen, onRestart }) {
         <section>
           <h3 className="band ok">✅ {t(UI.youQualify, lang)}</h3>
           {qualify.map((s) => (
-            <SchemeCard key={s.id} scheme={s} lang={lang} onOpen={onOpen} tone="ok" />
+            <SchemeCard key={s.id} scheme={s} lang={lang} onOpen={onOpen} tone="ok" isNew={newIds.has(s.id)} />
           ))}
         </section>
       )}
@@ -299,11 +349,14 @@ function Results({ lang, results, onOpen, onRestart }) {
         <section>
           <h3 className="band maybe">🟡 {t(UI.likelyQualify, lang)}</h3>
           {likely.map((s) => (
-            <SchemeCard key={s.id} scheme={s} lang={lang} onOpen={onOpen} tone="maybe" />
+            <SchemeCard key={s.id} scheme={s} lang={lang} onOpen={onOpen} tone="maybe" isNew={newIds.has(s.id)} />
           ))}
         </section>
       )}
 
+      <button className="ghost wide" onClick={onBrowse}>
+        🔎 {t(UI.browseAll, lang)}
+      </button>
       <button className="ghost wide" onClick={onRestart}>
         ↺ {t(UI.startOver, lang)}
       </button>
@@ -311,11 +364,14 @@ function Results({ lang, results, onOpen, onRestart }) {
   )
 }
 
-function SchemeCard({ scheme, lang, onOpen, tone }) {
+function SchemeCard({ scheme, lang, onOpen, tone, isNew }) {
   return (
     <button className={`card ${tone}`} onClick={() => onOpen(scheme)}>
       <div className="cardtop">
-        <span className="cardname">{t(scheme.name, lang)}</span>
+        <span className="cardname">
+          {isNew && <span className="newtag">{t(UI.newBadge, lang)}</span>}
+          {t(scheme.name, lang)}
+        </span>
         <span className="chev">›</span>
       </div>
       <span className="cardbenefit">{t(scheme.benefit, lang)}</span>
@@ -365,6 +421,80 @@ function Detail({ lang, scheme, onBack }) {
       <p className="updated">
         {t(UI.updated, lang)}: {scheme.updated}
       </p>
+    </div>
+  )
+}
+
+function BrowseAll({ lang, onBack }) {
+  const [catalog, setCatalog] = useState(null)
+  const [error, setError] = useState(false)
+  const [query, setQuery] = useState('')
+
+  useEffect(() => {
+    let alive = true
+    fetch(`${import.meta.env.BASE_URL}catalog.json`)
+      .then((r) => r.json())
+      .then((d) => alive && setCatalog(d))
+      .catch(() => alive && setError(true))
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const list = useMemo(() => {
+    if (!catalog) return []
+    const q = query.trim().toLowerCase()
+    const items = q
+      ? catalog.schemes.filter(
+          (s) => s.name.toLowerCase().includes(q) || s.state.toLowerCase().includes(q) || s.tags.toLowerCase().includes(q),
+        )
+      : catalog.schemes
+    return items.slice(0, 200) // cap render for performance
+  }, [catalog, query])
+
+  return (
+    <div className="browse">
+      <button className="ghost" onClick={onBack}>
+        ← {t(UI.back, lang)}
+      </button>
+      <h2>{t(UI.browseAll, lang)}</h2>
+      <p className="catnote">{t(UI.catalogNote, lang)}</p>
+
+      <input
+        className="searchbox"
+        placeholder={t(UI.search, lang)}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+
+      {error && <p className="empty">{t(UI.noMatches, lang)}</p>}
+      {!catalog && !error && <p className="empty">{t(UI.loading, lang)}</p>}
+
+      {catalog && (
+        <>
+          <p className="stepcount">
+            {list.length}
+            {query ? '' : ` / ${catalog.count}`}
+          </p>
+          {list.map((s, i) => (
+            <a
+              key={i}
+              className="card ok catlink"
+              href={s.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div className="cardtop">
+                <span className="cardname">{s.name}</span>
+                <span className="chev">›</span>
+              </div>
+              <span className="cardbenefit">
+                {s.state} · {s.level === 'central' ? '🇮🇳' : '📍'}
+              </span>
+            </a>
+          ))}
+        </>
+      )}
     </div>
   )
 }

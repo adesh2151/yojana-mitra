@@ -10,6 +10,18 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        // The full catalogue (~500 KB) is fetched on demand, not precached,
+        // so first load stays light. It gets runtime-cached after first view.
+        globIgnores: ['**/catalog.json'],
+        runtimeCaching: [
+          {
+            urlPattern: /catalog\.json$/,
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'scheme-catalog' },
+          },
+        ],
+      },
       manifest: {
         name: 'Yojana Mitra',
         short_name: 'Yojana Mitra',

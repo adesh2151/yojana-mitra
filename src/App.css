@@ -312,6 +312,42 @@
   text-align: center;
 }
 
+/* NEW badge */
+.newtag {
+  display: inline-block;
+  background: var(--saffron);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+
+/* Browse all */
+.catnote {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 2px 0 12px;
+}
+.searchbox {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  background: #fff;
+}
+.searchbox:focus {
+  outline: none;
+  border-color: var(--saffron);
+}
+.catlink {
+  text-decoration: none;
+}
+
 /* Footer */
 .disclaimer {
   background: #fff;
@@ -321,4 +357,21 @@
   line-height: 1.4;
   padding: 12px 16px;
   text-align: center;
+}
+.footlinks {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.footlinks a {
+  flex: 1;
+  min-width: 130px;
+  background: var(--ok-bg);
+  color: var(--green);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px;
+  border-radius: 10px;
 }

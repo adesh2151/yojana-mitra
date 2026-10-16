@@ -1,4 +1,4 @@
-// Yojana Mitra — scheme database (v1).
+// Yojana Mitra — scheme database (v1), trilingual: English + Marathi + Hindi.
 //
 // DATA SOURCE & ATTRIBUTION
 // Scheme information is based on the Government of India's myScheme platform
@@ -8,31 +8,25 @@
 // here is SIMPLIFIED for quick guidance — every scheme links to its official
 // page, which decides final eligibility.
 //
-// Each scheme carries plain-language text in English + Marathi and a set of
-// machine-checkable `rules`. The matching engine (src/engine/match.js) runs a
-// user's profile against these rules and sorts every scheme into one of three
-// buckets: QUALIFY (all hard rules pass), LIKELY (some rule is fuzzy / unknown,
-// user should verify) or NOT_ELIGIBLE (a hard rule fails).
-//
 // Rule shape: { field, op, value, verify? }
-//   field  — a key from the user profile (see src/data/questions.js)
-//   op     — 'eq' | 'in' | 'gte' | 'lte' | 'has'   ('has' = value is in an array field)
-//   value  — the value / list to compare against
-//   verify — true when the real govt rule is fuzzy and we can only say "likely"
+//   op — 'eq' | 'in' | 'gte' | 'lte' | 'has'
+//   verify:true means the real govt rule is fuzzy -> scheme lands in "likely".
 
 export const SCHEMES = [
   // ---------------------------------------------------------------- Farmers
   {
     id: 'pm-kisan',
     level: 'central',
-    name: { en: 'PM-KISAN', mr: 'पीएम-किसान' },
+    name: { en: 'PM-KISAN', mr: 'पीएम-किसान', hi: 'पीएम-किसान' },
     benefit: {
       en: '₹6,000 per year, paid in 3 installments directly to your bank account.',
       mr: 'दरवर्षी ₹6,000, तीन हप्त्यांत थेट तुमच्या बँक खात्यात.',
+      hi: 'हर साल ₹6,000, तीन किस्तों में सीधे आपके बैंक खाते में.',
     },
     why: {
       en: 'You are a farmer with small land holding.',
       mr: 'तुम्ही अल्पभूधारक शेतकरी आहात.',
+      hi: 'आप छोटी जोत वाले किसान हैं.',
     },
     rules: [
       { field: 'occupation', op: 'eq', value: 'farmer' },
@@ -41,6 +35,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Land ownership papers', 'Bank passbook'],
       mr: ['आधार कार्ड', 'जमिनीची कागदपत्रे', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'ज़मीन के कागज़ात', 'बैंक पासबुक'],
     },
     applyUrl: 'https://pmkisan.gov.in',
     updated: '2026-10-16',
@@ -49,14 +44,20 @@ export const SCHEMES = [
     id: 'namo-shetkari',
     level: 'state',
     state: 'maharashtra',
-    name: { en: 'Namo Shetkari Mahasanman Nidhi', mr: 'नमो शेतकरी महासन्मान निधी' },
+    name: {
+      en: 'Namo Shetkari Mahasanman Nidhi',
+      mr: 'नमो शेतकरी महासन्मान निधी',
+      hi: 'नमो शेतकरी महासम्मान निधि',
+    },
     benefit: {
       en: 'Extra ₹6,000 per year to Maharashtra farmers, on top of PM-KISAN.',
       mr: 'पीएम-किसान व्यतिरिक्त महाराष्ट्रातील शेतकऱ्यांना दरवर्षी अतिरिक्त ₹6,000.',
+      hi: 'पीएम-किसान के अतिरिक्त महाराष्ट्र के किसानों को हर साल अतिरिक्त ₹6,000.',
     },
     why: {
       en: 'You are a PM-KISAN-eligible farmer in Maharashtra.',
       mr: 'तुम्ही महाराष्ट्रातील पीएम-किसान पात्र शेतकरी आहात.',
+      hi: 'आप महाराष्ट्र के पीएम-किसान पात्र किसान हैं.',
     },
     rules: [
       { field: 'occupation', op: 'eq', value: 'farmer' },
@@ -65,6 +66,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'PM-KISAN registration', 'Land papers', 'Bank passbook'],
       mr: ['आधार कार्ड', 'पीएम-किसान नोंदणी', 'जमिनीची कागदपत्रे', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'पीएम-किसान पंजीकरण', 'ज़मीन के कागज़ात', 'बैंक पासबुक'],
     },
     applyUrl: 'https://nsmny.mahait.org',
     updated: '2026-10-16',
@@ -72,19 +74,22 @@ export const SCHEMES = [
   {
     id: 'pm-fasal-bima',
     level: 'central',
-    name: { en: 'PM Fasal Bima Yojana', mr: 'पंतप्रधान पीक विमा योजना' },
+    name: { en: 'PM Fasal Bima Yojana', mr: 'पंतप्रधान पीक विमा योजना', hi: 'पीएम फसल बीमा योजना' },
     benefit: {
       en: 'Crop insurance against natural calamity, pest and disease losses.',
       mr: 'नैसर्गिक आपत्ती, कीड व रोगामुळे होणाऱ्या पीक नुकसानीसाठी विमा.',
+      hi: 'प्राकृतिक आपदा, कीट और रोग से फसल नुकसान के लिए बीमा.',
     },
     why: {
       en: 'You are a farmer who grows notified crops.',
       mr: 'तुम्ही अधिसूचित पिके घेणारे शेतकरी आहात.',
+      hi: 'आप अधिसूचित फसलें उगाने वाले किसान हैं.',
     },
     rules: [{ field: 'occupation', op: 'eq', value: 'farmer' }],
     documents: {
       en: ['Aadhaar card', 'Land papers', 'Bank passbook', 'Sowing certificate'],
       mr: ['आधार कार्ड', 'जमिनीची कागदपत्रे', 'बँक पासबुक', 'पेरणी दाखला'],
+      hi: ['आधार कार्ड', 'ज़मीन के कागज़ात', 'बैंक पासबुक', 'बुवाई प्रमाणपत्र'],
     },
     applyUrl: 'https://pmfby.gov.in',
     updated: '2026-10-16',
@@ -92,19 +97,22 @@ export const SCHEMES = [
   {
     id: 'kisan-credit-card',
     level: 'central',
-    name: { en: 'Kisan Credit Card (KCC)', mr: 'किसान क्रेडिट कार्ड (KCC)' },
+    name: { en: 'Kisan Credit Card (KCC)', mr: 'किसान क्रेडिट कार्ड (KCC)', hi: 'किसान क्रेडिट कार्ड (KCC)' },
     benefit: {
       en: 'Low-interest crop loans and a credit card for farming needs.',
       mr: 'शेतीच्या गरजांसाठी कमी व्याजाचे पीक कर्ज व क्रेडिट कार्ड.',
+      hi: 'खेती की ज़रूरतों के लिए कम ब्याज पर फसल ऋण और क्रेडिट कार्ड.',
     },
     why: {
       en: 'You are a farmer who needs credit for cultivation.',
       mr: 'तुम्ही शेतीसाठी कर्जाची गरज असलेले शेतकरी आहात.',
+      hi: 'आप खेती के लिए ऋण चाहने वाले किसान हैं.',
     },
     rules: [{ field: 'occupation', op: 'eq', value: 'farmer' }],
     documents: {
       en: ['Aadhaar card', 'Land papers', 'Bank passbook', 'Passport photo'],
       mr: ['आधार कार्ड', 'जमिनीची कागदपत्रे', 'बँक पासबुक', 'पासपोर्ट फोटो'],
+      hi: ['आधार कार्ड', 'ज़मीन के कागज़ात', 'बैंक पासबुक', 'पासपोर्ट फोटो'],
     },
     applyUrl: 'https://www.myscheme.gov.in/schemes/kcc',
     updated: '2026-10-16',
@@ -112,14 +120,16 @@ export const SCHEMES = [
   {
     id: 'pm-kisan-maandhan',
     level: 'central',
-    name: { en: 'PM Kisan Maandhan Yojana', mr: 'पीएम किसान मानधन योजना' },
+    name: { en: 'PM Kisan Maandhan Yojana', mr: 'पीएम किसान मानधन योजना', hi: 'पीएम किसान मानधन योजना' },
     benefit: {
       en: 'Pension of ₹3,000 per month after age 60 for small farmers.',
       mr: 'अल्पभूधारक शेतकऱ्यांना वय 60 नंतर दरमहा ₹3,000 निवृत्तीवेतन.',
+      hi: 'छोटे किसानों को 60 वर्ष के बाद हर माह ₹3,000 पेंशन.',
     },
     why: {
       en: 'You are a small farmer aged 18–40 who can join a pension scheme.',
       mr: 'तुम्ही 18–40 वयाचे अल्पभूधारक शेतकरी आहात.',
+      hi: 'आप 18–40 वर्ष के छोटे किसान हैं.',
     },
     rules: [
       { field: 'occupation', op: 'eq', value: 'farmer' },
@@ -129,6 +139,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Land papers', 'Bank passbook'],
       mr: ['आधार कार्ड', 'जमिनीची कागदपत्रे', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'ज़मीन के कागज़ात', 'बैंक पासबुक'],
     },
     applyUrl: 'https://maandhan.in',
     updated: '2026-10-16',
@@ -137,14 +148,20 @@ export const SCHEMES = [
     id: 'gopinath-munde-accident',
     level: 'state',
     state: 'maharashtra',
-    name: { en: 'Gopinath Munde Farmer Accident Insurance', mr: 'गोपीनाथ मुंडे शेतकरी अपघात विमा' },
+    name: {
+      en: 'Gopinath Munde Farmer Accident Insurance',
+      mr: 'गोपीनाथ मुंडे शेतकरी अपघात विमा',
+      hi: 'गोपीनाथ मुंडे किसान दुर्घटना बीमा',
+    },
     benefit: {
       en: 'Insurance cover to a farmer family in case of accidental death or disability.',
       mr: 'अपघाती मृत्यू किंवा अपंगत्व झाल्यास शेतकरी कुटुंबाला विमा संरक्षण.',
+      hi: 'दुर्घटना में मृत्यु या विकलांगता पर किसान परिवार को बीमा सुरक्षा.',
     },
     why: {
       en: 'You are a farmer in Maharashtra.',
       mr: 'तुम्ही महाराष्ट्रातील शेतकरी आहात.',
+      hi: 'आप महाराष्ट्र के किसान हैं.',
     },
     rules: [
       { field: 'occupation', op: 'eq', value: 'farmer' },
@@ -153,6 +170,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', '7/12 land extract', 'Bank passbook'],
       mr: ['आधार कार्ड', '7/12 उतारा', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', '7/12 भूमि उतारा', 'बैंक पासबुक'],
     },
     applyUrl: 'https://www.myscheme.gov.in',
     updated: '2026-10-16',
@@ -163,14 +181,20 @@ export const SCHEMES = [
     id: 'ladki-bahin',
     level: 'state',
     state: 'maharashtra',
-    name: { en: 'Mukhyamantri Majhi Ladki Bahin Yojana', mr: 'मुख्यमंत्री माझी लाडकी बहीण योजना' },
+    name: {
+      en: 'Mukhyamantri Majhi Ladki Bahin Yojana',
+      mr: 'मुख्यमंत्री माझी लाडकी बहीण योजना',
+      hi: 'मुख्यमंत्री माझी लाडकी बहिण योजना',
+    },
     benefit: {
       en: '₹1,500 per month to eligible women aged 21–65 (Maharashtra).',
       mr: 'पात्र महिलांना (वय 21–65) दरमहा ₹1,500 (महाराष्ट्र).',
+      hi: 'पात्र महिलाओं (आयु 21–65) को हर माह ₹1,500 (महाराष्ट्र).',
     },
     why: {
       en: 'You are a woman in Maharashtra within the eligible age and income limit.',
       mr: 'तुम्ही महाराष्ट्रातील पात्र वयाच्या व उत्पन्न मर्यादेतील महिला आहात.',
+      hi: 'आप महाराष्ट्र की पात्र आयु व आय सीमा वाली महिला हैं.',
     },
     rules: [
       { field: 'gender', op: 'eq', value: 'female' },
@@ -182,6 +206,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Maharashtra domicile proof', 'Income certificate', 'Bank passbook'],
       mr: ['आधार कार्ड', 'महाराष्ट्र रहिवासी दाखला', 'उत्पन्न दाखला', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'महाराष्ट्र निवास प्रमाण', 'आय प्रमाणपत्र', 'बैंक पासबुक'],
     },
     applyUrl: 'https://ladakibahin.maharashtra.gov.in',
     updated: '2026-10-16',
@@ -189,14 +214,20 @@ export const SCHEMES = [
   {
     id: 'ujjwala',
     level: 'central',
-    name: { en: 'PM Ujjwala Yojana (free LPG)', mr: 'पंतप्रधान उज्ज्वला योजना (मोफत गॅस)' },
+    name: {
+      en: 'PM Ujjwala Yojana (free LPG)',
+      mr: 'पंतप्रधान उज्ज्वला योजना (मोफत गॅस)',
+      hi: 'पीएम उज्ज्वला योजना (मुफ़्त गैस)',
+    },
     benefit: {
       en: 'Free LPG gas connection to women from low-income households.',
       mr: 'कमी उत्पन्न कुटुंबातील महिलांना मोफत एलपीजी गॅस जोडणी.',
+      hi: 'कम आय वाले परिवारों की महिलाओं को मुफ़्त एलपीजी गैस कनेक्शन.',
     },
     why: {
       en: 'You are a woman from a low-income family without an LPG connection.',
       mr: 'तुम्ही एलपीजी जोडणी नसलेल्या कमी उत्पन्न कुटुंबातील महिला आहात.',
+      hi: 'आप एलपीजी कनेक्शन रहित कम आय परिवार की महिला हैं.',
     },
     rules: [
       { field: 'gender', op: 'eq', value: 'female' },
@@ -205,6 +236,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Ration card', 'Bank passbook'],
       mr: ['आधार कार्ड', 'रेशन कार्ड', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'राशन कार्ड', 'बैंक पासबुक'],
     },
     applyUrl: 'https://www.pmuy.gov.in',
     updated: '2026-10-16',
@@ -212,14 +244,16 @@ export const SCHEMES = [
   {
     id: 'matru-vandana',
     level: 'central',
-    name: { en: 'PM Matru Vandana Yojana', mr: 'पंतप्रधान मातृ वंदना योजना' },
+    name: { en: 'PM Matru Vandana Yojana', mr: 'पंतप्रधान मातृ वंदना योजना', hi: 'पीएम मातृ वंदना योजना' },
     benefit: {
       en: 'Cash support to pregnant and lactating mothers for the first child.',
       mr: 'पहिल्या मुलासाठी गर्भवती व स्तनदा मातांना रोख मदत.',
+      hi: 'पहले बच्चे के लिए गर्भवती व स्तनपान कराने वाली माताओं को नकद सहायता.',
     },
     why: {
       en: 'You are a woman who is pregnant or a new mother.',
       mr: 'तुम्ही गर्भवती किंवा नवमाता महिला आहात.',
+      hi: 'आप गर्भवती या नई माँ हैं.',
     },
     rules: [
       { field: 'gender', op: 'eq', value: 'female' },
@@ -229,6 +263,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'MCP card', 'Bank passbook'],
       mr: ['आधार कार्ड', 'एमसीपी कार्ड', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'एमसीपी कार्ड', 'बैंक पासबुक'],
     },
     applyUrl: 'https://wcd.nic.in/schemes/pradhan-mantri-matru-vandana-yojana',
     updated: '2026-10-16',
@@ -236,19 +271,22 @@ export const SCHEMES = [
   {
     id: 'sukanya-samriddhi',
     level: 'central',
-    name: { en: 'Sukanya Samriddhi Yojana', mr: 'सुकन्या समृद्धी योजना' },
+    name: { en: 'Sukanya Samriddhi Yojana', mr: 'सुकन्या समृद्धी योजना', hi: 'सुकन्या समृद्धि योजना' },
     benefit: {
       en: 'High-interest savings account for a girl child under 10, with tax benefits.',
       mr: '10 वर्षांखालील मुलीसाठी जास्त व्याजाचे बचत खाते, करसवलतीसह.',
+      hi: '10 वर्ष से छोटी बेटी के लिए अधिक ब्याज वाला बचत खाता, कर लाभ के साथ.',
     },
     why: {
       en: 'You have a girl child who can benefit from this savings scheme.',
       mr: 'तुम्हाला मुलगी आहे जिला या बचत योजनेचा लाभ होऊ शकतो.',
+      hi: 'आपकी बेटी है जिसे इस बचत योजना का लाभ मिल सकता है.',
     },
     rules: [{ field: 'hasGirlChild', op: 'eq', value: true, verify: true }],
     documents: {
       en: ["Girl child's birth certificate", "Parent's Aadhaar / ID", 'Address proof'],
       mr: ['मुलीचा जन्म दाखला', 'पालकाचे आधार / ओळखपत्र', 'पत्त्याचा पुरावा'],
+      hi: ['बेटी का जन्म प्रमाणपत्र', 'अभिभावक का आधार / पहचान', 'पता प्रमाण'],
     },
     applyUrl: 'https://www.india.gov.in/sukanya-samriddhi-yojana',
     updated: '2026-10-16',
@@ -257,14 +295,16 @@ export const SCHEMES = [
     id: 'lek-ladki',
     level: 'state',
     state: 'maharashtra',
-    name: { en: 'Lek Ladki Yojana', mr: 'लेक लाडकी योजना' },
+    name: { en: 'Lek Ladki Yojana', mr: 'लेक लाडकी योजना', hi: 'लेक लाडकी योजना' },
     benefit: {
       en: 'Staged cash benefit for a girl child in low-income Maharashtra families.',
       mr: 'महाराष्ट्रातील कमी उत्पन्न कुटुंबातील मुलीसाठी टप्प्याटप्प्याने रोख लाभ.',
+      hi: 'महाराष्ट्र के कम आय परिवारों की बेटी के लिए चरणबद्ध नकद लाभ.',
     },
     why: {
       en: 'You have a girl child in a low-income family in Maharashtra.',
       mr: 'तुम्हाला महाराष्ट्रातील कमी उत्पन्न कुटुंबातील मुलगी आहे.',
+      hi: 'आपकी महाराष्ट्र के कम आय परिवार में बेटी है.',
     },
     rules: [
       { field: 'state', op: 'eq', value: 'maharashtra' },
@@ -274,6 +314,7 @@ export const SCHEMES = [
     documents: {
       en: ["Girl child's birth certificate", 'Income certificate', 'Aadhaar card', 'Bank passbook'],
       mr: ['मुलीचा जन्म दाखला', 'उत्पन्न दाखला', 'आधार कार्ड', 'बँक पासबुक'],
+      hi: ['बेटी का जन्म प्रमाणपत्र', 'आय प्रमाणपत्र', 'आधार कार्ड', 'बैंक पासबुक'],
     },
     applyUrl: 'https://www.myscheme.gov.in',
     updated: '2026-10-16',
@@ -283,14 +324,20 @@ export const SCHEMES = [
   {
     id: 'old-age-pension',
     level: 'central',
-    name: { en: 'Old Age Pension (IGNOAPS)', mr: 'वृद्धापकाळ निवृत्तीवेतन (IGNOAPS)' },
+    name: {
+      en: 'Old Age Pension (IGNOAPS)',
+      mr: 'वृद्धापकाळ निवृत्तीवेतन (IGNOAPS)',
+      hi: 'वृद्धावस्था पेंशन (IGNOAPS)',
+    },
     benefit: {
       en: 'Monthly pension for senior citizens from Below Poverty Line families.',
       mr: 'दारिद्र्यरेषेखालील ज्येष्ठ नागरिकांना दरमहा निवृत्तीवेतन.',
+      hi: 'गरीबी रेखा से नीचे के वरिष्ठ नागरिकों को मासिक पेंशन.',
     },
     why: {
       en: 'You are 60 or older and from a low-income family.',
       mr: 'तुमचे वय 60 किंवा जास्त आहे आणि कुटुंब कमी उत्पन्न गटातील आहे.',
+      hi: 'आपकी आयु 60 या अधिक है और परिवार कम आय वर्ग का है.',
     },
     rules: [
       { field: 'age', op: 'gte', value: 60 },
@@ -299,6 +346,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Age proof', 'BPL card / income certificate', 'Bank passbook'],
       mr: ['आधार कार्ड', 'वयाचा पुरावा', 'बीपीएल कार्ड / उत्पन्न दाखला', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'आयु प्रमाण', 'बीपीएल कार्ड / आय प्रमाणपत्र', 'बैंक पासबुक'],
     },
     applyUrl: 'https://nsap.nic.in',
     updated: '2026-10-16',
@@ -307,14 +355,20 @@ export const SCHEMES = [
     id: 'shravan-bal',
     level: 'state',
     state: 'maharashtra',
-    name: { en: 'Shravanbal Seva Rajya Pension', mr: 'श्रावणबाळ सेवा राज्य निवृत्तीवेतन' },
+    name: {
+      en: 'Shravanbal Seva Rajya Pension',
+      mr: 'श्रावणबाळ सेवा राज्य निवृत्तीवेतन',
+      hi: 'श्रावणबाळ सेवा राज्य पेंशन',
+    },
     benefit: {
       en: 'Monthly state pension for senior citizens in Maharashtra.',
       mr: 'महाराष्ट्रातील ज्येष्ठ नागरिकांना दरमहा राज्य निवृत्तीवेतन.',
+      hi: 'महाराष्ट्र के वरिष्ठ नागरिकों को मासिक राज्य पेंशन.',
     },
     why: {
       en: 'You are a senior citizen (65+) in Maharashtra from a low-income family.',
       mr: 'तुम्ही महाराष्ट्रातील कमी उत्पन्न कुटुंबातील ज्येष्ठ नागरिक (65+) आहात.',
+      hi: 'आप महाराष्ट्र के कम आय परिवार के वरिष्ठ नागरिक (65+) हैं.',
     },
     rules: [
       { field: 'age', op: 'gte', value: 65 },
@@ -324,6 +378,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Age proof', 'Income certificate', 'Domicile', 'Bank passbook'],
       mr: ['आधार कार्ड', 'वयाचा पुरावा', 'उत्पन्न दाखला', 'रहिवासी दाखला', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'आयु प्रमाण', 'आय प्रमाणपत्र', 'निवास प्रमाण', 'बैंक पासबुक'],
     },
     applyUrl: 'https://aaplesarkar.mahaonline.gov.in',
     updated: '2026-10-16',
@@ -331,14 +386,16 @@ export const SCHEMES = [
   {
     id: 'widow-pension',
     level: 'central',
-    name: { en: 'Widow Pension (IGNWPS)', mr: 'विधवा निवृत्तीवेतन (IGNWPS)' },
+    name: { en: 'Widow Pension (IGNWPS)', mr: 'विधवा निवृत्तीवेतन (IGNWPS)', hi: 'विधवा पेंशन (IGNWPS)' },
     benefit: {
       en: 'Monthly pension for widows aged 40 and above from BPL families.',
       mr: 'दारिद्र्यरेषेखालील 40 व त्यावरील वयाच्या विधवा महिलांना दरमहा निवृत्तीवेतन.',
+      hi: 'गरीबी रेखा से नीचे 40 वर्ष व अधिक की विधवाओं को मासिक पेंशन.',
     },
     why: {
       en: 'You are a widow aged 40 or above from a low-income family.',
       mr: 'तुम्ही कमी उत्पन्न गटातील 40 वर्षांवरील विधवा आहात.',
+      hi: 'आप कम आय परिवार की 40 वर्ष से अधिक की विधवा हैं.',
     },
     rules: [
       { field: 'gender', op: 'eq', value: 'female' },
@@ -349,6 +406,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Death certificate of husband', 'Income certificate', 'Bank passbook'],
       mr: ['आधार कार्ड', 'पतीचा मृत्यू दाखला', 'उत्पन्न दाखला', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'पति का मृत्यु प्रमाणपत्र', 'आय प्रमाणपत्र', 'बैंक पासबुक'],
     },
     applyUrl: 'https://nsap.nic.in',
     updated: '2026-10-16',
@@ -357,14 +415,20 @@ export const SCHEMES = [
     id: 'sanjay-gandhi-niradhar',
     level: 'state',
     state: 'maharashtra',
-    name: { en: 'Sanjay Gandhi Niradhar Anudan Yojana', mr: 'संजय गांधी निराधार अनुदान योजना' },
+    name: {
+      en: 'Sanjay Gandhi Niradhar Anudan Yojana',
+      mr: 'संजय गांधी निराधार अनुदान योजना',
+      hi: 'संजय गांधी निराधार अनुदान योजना',
+    },
     benefit: {
       en: 'Monthly support for destitute, widows, orphans and disabled in Maharashtra.',
       mr: 'महाराष्ट्रातील निराधार, विधवा, अनाथ व अपंगांना दरमहा मदत.',
+      hi: 'महाराष्ट्र के निराश्रित, विधवा, अनाथ व दिव्यांगों को मासिक सहायता.',
     },
     why: {
       en: 'You are a destitute / widow / disabled person in a low-income family in Maharashtra.',
       mr: 'तुम्ही महाराष्ट्रातील कमी उत्पन्न कुटुंबातील निराधार / विधवा / अपंग व्यक्ती आहात.',
+      hi: 'आप महाराष्ट्र के कम आय परिवार के निराश्रित / विधवा / दिव्यांग व्यक्ति हैं.',
     },
     rules: [
       { field: 'state', op: 'eq', value: 'maharashtra' },
@@ -373,6 +437,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Income certificate', 'Age proof', 'Domicile', 'Bank passbook'],
       mr: ['आधार कार्ड', 'उत्पन्न दाखला', 'वयाचा पुरावा', 'रहिवासी दाखला', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'आय प्रमाणपत्र', 'आयु प्रमाण', 'निवास प्रमाण', 'बैंक पासबुक'],
     },
     applyUrl: 'https://aaplesarkar.mahaonline.gov.in',
     updated: '2026-10-16',
@@ -380,14 +445,20 @@ export const SCHEMES = [
   {
     id: 'disability-pension',
     level: 'central',
-    name: { en: 'Disability Pension (IGNDPS)', mr: 'अपंगत्व निवृत्तीवेतन (IGNDPS)' },
+    name: {
+      en: 'Disability Pension (IGNDPS)',
+      mr: 'अपंगत्व निवृत्तीवेतन (IGNDPS)',
+      hi: 'दिव्यांग पेंशन (IGNDPS)',
+    },
     benefit: {
       en: 'Monthly pension for persons with severe disability from BPL families.',
       mr: 'दारिद्र्यरेषेखालील गंभीर अपंगत्व असलेल्या व्यक्तींना दरमहा निवृत्तीवेतन.',
+      hi: 'गरीबी रेखा से नीचे गंभीर दिव्यांगता वाले व्यक्तियों को मासिक पेंशन.',
     },
     why: {
       en: 'You have a disability and are from a low-income family.',
       mr: 'तुम्हाला अपंगत्व आहे आणि कुटुंब कमी उत्पन्न गटातील आहे.',
+      hi: 'आप दिव्यांग हैं और परिवार कम आय वर्ग का है.',
     },
     rules: [
       { field: 'special', op: 'has', value: 'disabled' },
@@ -396,6 +467,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Disability certificate', 'Income certificate', 'Bank passbook'],
       mr: ['आधार कार्ड', 'अपंगत्व प्रमाणपत्र', 'उत्पन्न दाखला', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'दिव्यांगता प्रमाणपत्र', 'आय प्रमाणपत्र', 'बैंक पासबुक'],
     },
     applyUrl: 'https://nsap.nic.in',
     updated: '2026-10-16',
@@ -403,19 +475,26 @@ export const SCHEMES = [
   {
     id: 'family-benefit',
     level: 'central',
-    name: { en: 'National Family Benefit Scheme', mr: 'राष्ट्रीय कुटुंब लाभ योजना' },
+    name: {
+      en: 'National Family Benefit Scheme',
+      mr: 'राष्ट्रीय कुटुंब लाभ योजना',
+      hi: 'राष्ट्रीय परिवार लाभ योजना',
+    },
     benefit: {
       en: 'One-time financial help to a BPL family on death of the main breadwinner.',
       mr: 'कमावत्या व्यक्तीच्या मृत्यूनंतर दारिद्र्यरेषेखालील कुटुंबाला एकरकमी आर्थिक मदत.',
+      hi: 'मुख्य कमाने वाले की मृत्यु पर गरीबी रेखा से नीचे परिवार को एकमुश्त आर्थिक मदद.',
     },
     why: {
       en: 'Your low-income family has lost its primary earner.',
       mr: 'तुमच्या कमी उत्पन्न कुटुंबातील मुख्य कमावती व्यक्ती गमावली आहे.',
+      hi: 'आपके कम आय परिवार ने मुख्य कमाने वाले को खोया है.',
     },
     rules: [{ field: 'incomeBand', op: 'in', value: ['below1L'], verify: true }],
     documents: {
       en: ['Aadhaar card', 'Death certificate of breadwinner', 'Income certificate', 'Bank passbook'],
       mr: ['आधार कार्ड', 'कमावत्याचा मृत्यू दाखला', 'उत्पन्न दाखला', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'कमाने वाले का मृत्यु प्रमाणपत्र', 'आय प्रमाणपत्र', 'बैंक पासबुक'],
     },
     applyUrl: 'https://nsap.nic.in',
     updated: '2026-10-16',
@@ -425,19 +504,22 @@ export const SCHEMES = [
   {
     id: 'ayushman-bharat',
     level: 'central',
-    name: { en: 'Ayushman Bharat (PM-JAY)', mr: 'आयुष्मान भारत (PM-JAY)' },
+    name: { en: 'Ayushman Bharat (PM-JAY)', mr: 'आयुष्मान भारत (PM-JAY)', hi: 'आयुष्मान भारत (PM-JAY)' },
     benefit: {
       en: 'Free hospital treatment up to ₹5 lakh per family per year.',
       mr: 'दरवर्षी प्रति कुटुंब ₹5 लाखांपर्यंत मोफत रुग्णालय उपचार.',
+      hi: 'हर साल प्रति परिवार ₹5 लाख तक मुफ़्त अस्पताल इलाज.',
     },
     why: {
       en: 'Your family is in a low-income group eligible for health cover.',
       mr: 'तुमचे कुटुंब आरोग्य संरक्षणासाठी पात्र कमी उत्पन्न गटातील आहे.',
+      hi: 'आपका परिवार स्वास्थ्य कवर के पात्र कम आय वर्ग में है.',
     },
     rules: [{ field: 'incomeBand', op: 'in', value: ['below1L', '1to2L'], verify: true }],
     documents: {
       en: ['Aadhaar card', 'Ration card', 'Mobile number'],
       mr: ['आधार कार्ड', 'रेशन कार्ड', 'मोबाईल नंबर'],
+      hi: ['आधार कार्ड', 'राशन कार्ड', 'मोबाइल नंबर'],
     },
     applyUrl: 'https://pmjay.gov.in',
     updated: '2026-10-16',
@@ -445,19 +527,22 @@ export const SCHEMES = [
   {
     id: 'ayushman-vay-vandana',
     level: 'central',
-    name: { en: 'Ayushman Vay Vandana (70+)', mr: 'आयुष्मान वय वंदना (70+)' },
+    name: { en: 'Ayushman Vay Vandana (70+)', mr: 'आयुष्मान वय वंदना (70+)', hi: 'आयुष्मान वय वंदना (70+)' },
     benefit: {
       en: 'Free health cover for all senior citizens aged 70 and above.',
       mr: '70 व त्यावरील सर्व ज्येष्ठ नागरिकांना मोफत आरोग्य संरक्षण.',
+      hi: '70 व अधिक आयु के सभी वरिष्ठ नागरिकों को मुफ़्त स्वास्थ्य कवर.',
     },
     why: {
       en: 'You are 70 or older (income no bar for this one).',
       mr: 'तुमचे वय 70 किंवा जास्त आहे (उत्पन्नाची अट नाही).',
+      hi: 'आपकी आयु 70 या अधिक है (इसमें आय की शर्त नहीं).',
     },
     rules: [{ field: 'age', op: 'gte', value: 70 }],
     documents: {
       en: ['Aadhaar card', 'Age proof', 'Mobile number'],
       mr: ['आधार कार्ड', 'वयाचा पुरावा', 'मोबाईल नंबर'],
+      hi: ['आधार कार्ड', 'आयु प्रमाण', 'मोबाइल नंबर'],
     },
     applyUrl: 'https://pmjay.gov.in',
     updated: '2026-10-16',
@@ -466,19 +551,26 @@ export const SCHEMES = [
     id: 'mjpjay',
     level: 'state',
     state: 'maharashtra',
-    name: { en: 'Mahatma Phule Jan Arogya Yojana', mr: 'महात्मा फुले जन आरोग्य योजना' },
+    name: {
+      en: 'Mahatma Phule Jan Arogya Yojana',
+      mr: 'महात्मा फुले जन आरोग्य योजना',
+      hi: 'महात्मा फुले जन आरोग्य योजना',
+    },
     benefit: {
       en: 'Cashless hospital treatment for families in Maharashtra.',
       mr: 'महाराष्ट्रातील कुटुंबांना कॅशलेस रुग्णालय उपचार.',
+      hi: 'महाराष्ट्र के परिवारों को कैशलेस अस्पताल इलाज.',
     },
     why: {
       en: 'You are a resident of Maharashtra.',
       mr: 'तुम्ही महाराष्ट्राचे रहिवासी आहात.',
+      hi: 'आप महाराष्ट्र के निवासी हैं.',
     },
     rules: [{ field: 'state', op: 'eq', value: 'maharashtra' }],
     documents: {
       en: ['Aadhaar card', 'Ration card', 'Maharashtra domicile'],
       mr: ['आधार कार्ड', 'रेशन कार्ड', 'महाराष्ट्र रहिवासी दाखला'],
+      hi: ['आधार कार्ड', 'राशन कार्ड', 'महाराष्ट्र निवास प्रमाण'],
     },
     applyUrl: 'https://www.jeevandayee.gov.in',
     updated: '2026-10-16',
@@ -488,19 +580,26 @@ export const SCHEMES = [
   {
     id: 'pm-awas-gramin',
     level: 'central',
-    name: { en: 'PM Awas Yojana (Gramin)', mr: 'पंतप्रधान आवास योजना (ग्रामीण)' },
+    name: {
+      en: 'PM Awas Yojana (Gramin)',
+      mr: 'पंतप्रधान आवास योजना (ग्रामीण)',
+      hi: 'पीएम आवास योजना (ग्रामीण)',
+    },
     benefit: {
       en: 'Financial help to build a pucca house for rural homeless / kutcha-house families.',
       mr: 'ग्रामीण बेघर / कच्चे घर असलेल्या कुटुंबांना पक्के घर बांधण्यासाठी आर्थिक मदत.',
+      hi: 'ग्रामीण बेघर / कच्चे घर वाले परिवारों को पक्का घर बनाने हेतु आर्थिक मदद.',
     },
     why: {
       en: 'You are from a rural low-income family without a pucca house.',
       mr: 'तुम्ही पक्के घर नसलेल्या ग्रामीण कमी उत्पन्न कुटुंबातील आहात.',
+      hi: 'आप पक्के घर रहित ग्रामीण कम आय परिवार से हैं.',
     },
     rules: [{ field: 'incomeBand', op: 'in', value: ['below1L', '1to2L'], verify: true }],
     documents: {
       en: ['Aadhaar card', 'Job card (MGNREGA)', 'Bank passbook', 'SECC verification'],
       mr: ['आधार कार्ड', 'जॉब कार्ड (मनरेगा)', 'बँक पासबुक', 'SECC पडताळणी'],
+      hi: ['आधार कार्ड', 'जॉब कार्ड (मनरेगा)', 'बैंक पासबुक', 'SECC सत्यापन'],
     },
     applyUrl: 'https://pmayg.nic.in',
     updated: '2026-10-16',
@@ -508,19 +607,22 @@ export const SCHEMES = [
   {
     id: 'pm-awas-urban',
     level: 'central',
-    name: { en: 'PM Awas Yojana (Urban)', mr: 'पंतप्रधान आवास योजना (शहरी)' },
+    name: { en: 'PM Awas Yojana (Urban)', mr: 'पंतप्रधान आवास योजना (शहरी)', hi: 'पीएम आवास योजना (शहरी)' },
     benefit: {
       en: 'Interest subsidy / help to buy or build a house for urban low & middle income families.',
       mr: 'शहरी कमी व मध्यम उत्पन्न कुटुंबांना घर घेण्यासाठी व्याज सवलत / मदत.',
+      hi: 'शहरी कम व मध्यम आय परिवारों को घर खरीदने हेतु ब्याज सब्सिडी / मदद.',
     },
     why: {
       en: 'You are an urban family without a pucca house.',
       mr: 'तुम्ही पक्के घर नसलेले शहरी कुटुंब आहात.',
+      hi: 'आप पक्के घर रहित शहरी परिवार हैं.',
     },
     rules: [{ field: 'incomeBand', op: 'in', value: ['below1L', '1to2L', '2to5L'], verify: true }],
     documents: {
       en: ['Aadhaar card', 'Income certificate', 'Bank passbook'],
       mr: ['आधार कार्ड', 'उत्पन्न दाखला', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'आय प्रमाणपत्र', 'बैंक पासबुक'],
     },
     applyUrl: 'https://pmay-urban.gov.in',
     updated: '2026-10-16',
@@ -530,14 +632,20 @@ export const SCHEMES = [
   {
     id: 'pre-matric-scholarship',
     level: 'central',
-    name: { en: 'Pre-Matric Scholarship (SC/ST/OBC)', mr: 'मॅट्रिकपूर्व शिष्यवृत्ती (SC/ST/OBC)' },
+    name: {
+      en: 'Pre-Matric Scholarship (SC/ST/OBC)',
+      mr: 'मॅट्रिकपूर्व शिष्यवृत्ती (SC/ST/OBC)',
+      hi: 'प्री-मैट्रिक छात्रवृत्ति (SC/ST/OBC)',
+    },
     benefit: {
       en: 'Scholarship for students of class 9–10 from SC/ST/OBC low-income families.',
       mr: 'SC/ST/OBC कमी उत्पन्न कुटुंबातील इयत्ता 9–10 च्या विद्यार्थ्यांसाठी शिष्यवृत्ती.',
+      hi: 'SC/ST/OBC कम आय परिवारों के कक्षा 9–10 के विद्यार्थियों के लिए छात्रवृत्ति.',
     },
     why: {
       en: 'You are a student from a reserved-category low-income family.',
       mr: 'तुम्ही आरक्षित प्रवर्गातील कमी उत्पन्न कुटुंबातील विद्यार्थी आहात.',
+      hi: 'आप आरक्षित वर्ग के कम आय परिवार के विद्यार्थी हैं.',
     },
     rules: [
       { field: 'occupation', op: 'eq', value: 'student' },
@@ -547,6 +655,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Caste certificate', 'Income certificate', 'School bonafide', 'Bank passbook'],
       mr: ['आधार कार्ड', 'जातीचा दाखला', 'उत्पन्न दाखला', 'शाळेचा बोनाफाईड', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'जाति प्रमाणपत्र', 'आय प्रमाणपत्र', 'स्कूल बोनाफाइड', 'बैंक पासबुक'],
     },
     applyUrl: 'https://scholarships.gov.in',
     updated: '2026-10-16',
@@ -554,14 +663,20 @@ export const SCHEMES = [
   {
     id: 'post-matric-scholarship',
     level: 'central',
-    name: { en: 'Post-Matric Scholarship (SC/ST/OBC)', mr: 'मॅट्रिकोत्तर शिष्यवृत्ती (SC/ST/OBC)' },
+    name: {
+      en: 'Post-Matric Scholarship (SC/ST/OBC)',
+      mr: 'मॅट्रिकोत्तर शिष्यवृत्ती (SC/ST/OBC)',
+      hi: 'पोस्ट-मैट्रिक छात्रवृत्ति (SC/ST/OBC)',
+    },
     benefit: {
       en: 'Scholarship covering fees & allowances for class 11 to college students.',
       mr: 'इयत्ता 11 ते महाविद्यालयीन विद्यार्थ्यांसाठी फी व भत्त्यांसह शिष्यवृत्ती.',
+      hi: 'कक्षा 11 से कॉलेज के विद्यार्थियों हेतु फीस व भत्तों सहित छात्रवृत्ति.',
     },
     why: {
       en: 'You are a reserved-category student in higher studies from a low-income family.',
       mr: 'तुम्ही उच्च शिक्षण घेणारे आरक्षित प्रवर्गातील कमी उत्पन्न कुटुंबातील विद्यार्थी आहात.',
+      hi: 'आप उच्च शिक्षा ले रहे आरक्षित वर्ग के कम आय परिवार के विद्यार्थी हैं.',
     },
     rules: [
       { field: 'occupation', op: 'eq', value: 'student' },
@@ -571,6 +686,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Caste certificate', 'Income certificate', 'Marksheet', 'Bank passbook'],
       mr: ['आधार कार्ड', 'जातीचा दाखला', 'उत्पन्न दाखला', 'गुणपत्रिका', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'जाति प्रमाणपत्र', 'आय प्रमाणपत्र', 'अंकसूची', 'बैंक पासबुक'],
     },
     applyUrl: 'https://scholarships.gov.in',
     updated: '2026-10-16',
@@ -578,19 +694,26 @@ export const SCHEMES = [
   {
     id: 'pm-vidyalakshmi',
     level: 'central',
-    name: { en: 'PM Vidyalaxmi Education Loan', mr: 'पीएम विद्यालक्ष्मी शैक्षणिक कर्ज' },
+    name: {
+      en: 'PM Vidyalaxmi Education Loan',
+      mr: 'पीएम विद्यालक्ष्मी शैक्षणिक कर्ज',
+      hi: 'पीएम विद्यालक्ष्मी शिक्षा ऋण',
+    },
     benefit: {
       en: 'Collateral-free education loan with interest help for meritorious students.',
       mr: 'गुणवंत विद्यार्थ्यांना तारणमुक्त शैक्षणिक कर्ज व व्याज सवलत.',
+      hi: 'मेधावी विद्यार्थियों को बिना गारंटी शिक्षा ऋण व ब्याज सहायता.',
     },
     why: {
       en: 'You are a student who needs a loan for higher education.',
       mr: 'तुम्ही उच्च शिक्षणासाठी कर्जाची गरज असलेले विद्यार्थी आहात.',
+      hi: 'आप उच्च शिक्षा के लिए ऋण चाहने वाले विद्यार्थी हैं.',
     },
     rules: [{ field: 'occupation', op: 'eq', value: 'student' }],
     documents: {
       en: ['Aadhaar card', 'Admission letter', 'Income certificate', 'Marksheet'],
       mr: ['आधार कार्ड', 'प्रवेश पत्र', 'उत्पन्न दाखला', 'गुणपत्रिका'],
+      hi: ['आधार कार्ड', 'प्रवेश पत्र', 'आय प्रमाणपत्र', 'अंकसूची'],
     },
     applyUrl: 'https://www.vidyalakshmi.co.in',
     updated: '2026-10-16',
@@ -598,14 +721,20 @@ export const SCHEMES = [
   {
     id: 'kaushal-vikas',
     level: 'central',
-    name: { en: 'PM Kaushal Vikas Yojana (skills)', mr: 'पंतप्रधान कौशल्य विकास योजना' },
+    name: {
+      en: 'PM Kaushal Vikas Yojana (skills)',
+      mr: 'पंतप्रधान कौशल्य विकास योजना',
+      hi: 'पीएम कौशल विकास योजना',
+    },
     benefit: {
       en: 'Free skill training and certification to help you get a job.',
       mr: 'नोकरी मिळवण्यासाठी मोफत कौशल्य प्रशिक्षण व प्रमाणपत्र.',
+      hi: 'नौकरी पाने हेतु मुफ़्त कौशल प्रशिक्षण व प्रमाणपत्र.',
     },
     why: {
       en: 'You are a young person looking for skills or work.',
       mr: 'तुम्ही कौशल्य किंवा कामाच्या शोधात असलेले तरुण आहात.',
+      hi: 'आप कौशल या काम की तलाश में युवा हैं.',
     },
     rules: [
       { field: 'age', op: 'gte', value: 15 },
@@ -614,6 +743,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Bank passbook', 'Passport photo'],
       mr: ['आधार कार्ड', 'बँक पासबुक', 'पासपोर्ट फोटो'],
+      hi: ['आधार कार्ड', 'बैंक पासबुक', 'पासपोर्ट फोटो'],
     },
     applyUrl: 'https://www.pmkvyofficial.org',
     updated: '2026-10-16',
@@ -623,14 +753,16 @@ export const SCHEMES = [
   {
     id: 'e-shram',
     level: 'central',
-    name: { en: 'e-Shram Card', mr: 'ई-श्रम कार्ड' },
+    name: { en: 'e-Shram Card', mr: 'ई-श्रम कार्ड', hi: 'ई-श्रम कार्ड' },
     benefit: {
       en: 'National ID for unorganised workers with accident insurance and scheme access.',
       mr: 'असंघटित कामगारांसाठी राष्ट्रीय ओळखपत्र, अपघात विमा व योजनांचा लाभ.',
+      hi: 'असंगठित श्रमिकों हेतु राष्ट्रीय पहचान, दुर्घटना बीमा व योजनाओं का लाभ.',
     },
     why: {
       en: 'You are a daily-wage / unorganised worker.',
       mr: 'तुम्ही मजूर / असंघटित कामगार आहात.',
+      hi: 'आप मज़दूर / असंगठित श्रमिक हैं.',
     },
     rules: [
       { field: 'occupation', op: 'in', value: ['worker', 'farmer'] },
@@ -640,6 +772,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Mobile linked to Aadhaar', 'Bank passbook'],
       mr: ['आधार कार्ड', 'आधारशी जोडलेला मोबाईल', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'आधार से जुड़ा मोबाइल', 'बैंक पासबुक'],
     },
     applyUrl: 'https://eshram.gov.in',
     updated: '2026-10-16',
@@ -647,14 +780,16 @@ export const SCHEMES = [
   {
     id: 'shram-yogi-maandhan',
     level: 'central',
-    name: { en: 'PM Shram Yogi Maandhan', mr: 'पीएम श्रम योगी मानधन' },
+    name: { en: 'PM Shram Yogi Maandhan', mr: 'पीएम श्रम योगी मानधन', hi: 'पीएम श्रम योगी मानधन' },
     benefit: {
       en: 'Pension of ₹3,000 per month after 60 for unorganised workers.',
       mr: 'असंघटित कामगारांना वय 60 नंतर दरमहा ₹3,000 निवृत्तीवेतन.',
+      hi: 'असंगठित श्रमिकों को 60 के बाद हर माह ₹3,000 पेंशन.',
     },
     why: {
       en: 'You are an unorganised worker aged 18–40 with low income.',
       mr: 'तुम्ही 18–40 वयाचे कमी उत्पन्न असलेले असंघटित कामगार आहात.',
+      hi: 'आप 18–40 वर्ष के कम आय वाले असंगठित श्रमिक हैं.',
     },
     rules: [
       { field: 'occupation', op: 'eq', value: 'worker' },
@@ -664,6 +799,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Bank passbook (savings)', 'Mobile number'],
       mr: ['आधार कार्ड', 'बँक पासबुक (बचत)', 'मोबाईल नंबर'],
+      hi: ['आधार कार्ड', 'बैंक पासबुक (बचत)', 'मोबाइल नंबर'],
     },
     applyUrl: 'https://maandhan.in',
     updated: '2026-10-16',
@@ -671,19 +807,22 @@ export const SCHEMES = [
   {
     id: 'pm-svanidhi',
     level: 'central',
-    name: { en: 'PM SVANidhi (street vendors)', mr: 'पीएम स्वनिधी (फेरीवाले)' },
+    name: { en: 'PM SVANidhi (street vendors)', mr: 'पीएम स्वनिधी (फेरीवाले)', hi: 'पीएम स्वनिधि (रेहड़ी-पटरी)' },
     benefit: {
       en: 'Collateral-free working-capital loan for street vendors.',
       mr: 'फेरीवाल्यांना तारणमुक्त खेळते भांडवल कर्ज.',
+      hi: 'रेहड़ी-पटरी विक्रेताओं को बिना गारंटी कार्यशील पूंजी ऋण.',
     },
     why: {
       en: 'You run a small street vending business.',
       mr: 'तुम्ही छोटा फेरीवाला व्यवसाय करता.',
+      hi: 'आप छोटा रेहड़ी-पटरी व्यवसाय चलाते हैं.',
     },
     rules: [{ field: 'occupation', op: 'in', value: ['business', 'worker'] }],
     documents: {
       en: ['Aadhaar card', 'Vending certificate / ID', 'Bank passbook'],
       mr: ['आधार कार्ड', 'विक्री प्रमाणपत्र / ओळखपत्र', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'वेंडिंग प्रमाणपत्र / पहचान', 'बैंक पासबुक'],
     },
     applyUrl: 'https://pmsvanidhi.mohua.gov.in',
     updated: '2026-10-16',
@@ -691,19 +830,22 @@ export const SCHEMES = [
   {
     id: 'pm-mudra',
     level: 'central',
-    name: { en: 'PM Mudra Yojana (business loan)', mr: 'पीएम मुद्रा योजना (व्यवसाय कर्ज)' },
+    name: { en: 'PM Mudra Yojana (business loan)', mr: 'पीएम मुद्रा योजना (व्यवसाय कर्ज)', hi: 'पीएम मुद्रा योजना (व्यवसाय ऋण)' },
     benefit: {
       en: 'Loans up to ₹10 lakh for small / micro non-farm businesses.',
       mr: 'लहान / सूक्ष्म बिगरशेती व्यवसायांसाठी ₹10 लाखांपर्यंत कर्ज.',
+      hi: 'छोटे / सूक्ष्म गैर-कृषि व्यवसायों हेतु ₹10 लाख तक ऋण.',
     },
     why: {
       en: 'You run or want to start a small business.',
       mr: 'तुम्ही छोटा व्यवसाय करता किंवा सुरू करू इच्छिता.',
+      hi: 'आप छोटा व्यवसाय चलाते हैं या शुरू करना चाहते हैं.',
     },
     rules: [{ field: 'occupation', op: 'in', value: ['business', 'worker', 'none'] }],
     documents: {
       en: ['Aadhaar card', 'Business proof / plan', 'Bank passbook'],
       mr: ['आधार कार्ड', 'व्यवसायाचा पुरावा / आराखडा', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'व्यवसाय प्रमाण / योजना', 'बैंक पासबुक'],
     },
     applyUrl: 'https://www.mudra.org.in',
     updated: '2026-10-16',
@@ -711,19 +853,22 @@ export const SCHEMES = [
   {
     id: 'pm-vishwakarma',
     level: 'central',
-    name: { en: 'PM Vishwakarma (artisans)', mr: 'पीएम विश्वकर्मा (कारागीर)' },
+    name: { en: 'PM Vishwakarma (artisans)', mr: 'पीएम विश्वकर्मा (कारागीर)', hi: 'पीएम विश्वकर्मा (कारीगर)' },
     benefit: {
       en: 'Toolkit help, training stipend and cheap loans for traditional artisans.',
       mr: 'पारंपरिक कारागिरांना साधन मदत, प्रशिक्षण भत्ता व स्वस्त कर्ज.',
+      hi: 'पारंपरिक कारीगरों को औज़ार सहायता, प्रशिक्षण भत्ता व सस्ता ऋण.',
     },
     why: {
       en: 'You are a traditional artisan or craftsperson (carpenter, tailor, potter, etc.).',
       mr: 'तुम्ही पारंपरिक कारागीर आहात (सुतार, शिंपी, कुंभार इ.).',
+      hi: 'आप पारंपरिक कारीगर हैं (बढ़ई, दर्ज़ी, कुम्हार आदि).',
     },
     rules: [{ field: 'occupation', op: 'in', value: ['business', 'worker'] }],
     documents: {
       en: ['Aadhaar card', 'Trade / skill proof', 'Bank passbook'],
       mr: ['आधार कार्ड', 'व्यवसाय / कौशल्य पुरावा', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'व्यवसाय / कौशल प्रमाण', 'बैंक पासबुक'],
     },
     applyUrl: 'https://pmvishwakarma.gov.in',
     updated: '2026-10-16',
@@ -732,14 +877,20 @@ export const SCHEMES = [
     id: 'annasaheb-patil-loan',
     level: 'state',
     state: 'maharashtra',
-    name: { en: 'Annasaheb Patil Loan (interest-free)', mr: 'अण्णासाहेब पाटील कर्ज (बिनव्याजी)' },
+    name: {
+      en: 'Annasaheb Patil Loan (interest-free)',
+      mr: 'अण्णासाहेब पाटील कर्ज (बिनव्याजी)',
+      hi: 'अण्णासाहेब पाटील ऋण (ब्याज मुक्त)',
+    },
     benefit: {
       en: 'Interest refund on business loans for economically weaker youth in Maharashtra.',
       mr: 'महाराष्ट्रातील आर्थिकदृष्ट्या दुर्बल तरुणांना व्यवसाय कर्जावर व्याज परतावा.',
+      hi: 'महाराष्ट्र के आर्थिक रूप से कमज़ोर युवाओं को व्यवसाय ऋण पर ब्याज वापसी.',
     },
     why: {
       en: 'You are a young entrepreneur from an economically weaker section in Maharashtra.',
       mr: 'तुम्ही महाराष्ट्रातील आर्थिकदृष्ट्या दुर्बल घटकातील तरुण उद्योजक आहात.',
+      hi: 'आप महाराष्ट्र के आर्थिक रूप से कमज़ोर वर्ग के युवा उद्यमी हैं.',
     },
     rules: [
       { field: 'state', op: 'eq', value: 'maharashtra' },
@@ -750,6 +901,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Income certificate', 'Domicile', 'Business plan', 'Bank passbook'],
       mr: ['आधार कार्ड', 'उत्पन्न दाखला', 'रहिवासी दाखला', 'व्यवसाय आराखडा', 'बँक पासबुक'],
+      hi: ['आधार कार्ड', 'आय प्रमाणपत्र', 'निवास प्रमाण', 'व्यवसाय योजना', 'बैंक पासबुक'],
     },
     applyUrl: 'https://udyog.mahaswayam.gov.in',
     updated: '2026-10-16',
@@ -759,19 +911,26 @@ export const SCHEMES = [
   {
     id: 'jan-dhan',
     level: 'central',
-    name: { en: 'PM Jan Dhan Yojana (bank account)', mr: 'पीएम जन धन योजना (बँक खाते)' },
+    name: {
+      en: 'PM Jan Dhan Yojana (bank account)',
+      mr: 'पीएम जन धन योजना (बँक खाते)',
+      hi: 'पीएम जन धन योजना (बैंक खाता)',
+    },
     benefit: {
       en: 'Zero-balance bank account with free accident insurance and overdraft.',
       mr: 'शून्य शिल्लक बँक खाते, मोफत अपघात विमा व ओव्हरड्राफ्टसह.',
+      hi: 'ज़ीरो-बैलेंस बैंक खाता, मुफ़्त दुर्घटना बीमा व ओवरड्राफ्ट सहित.',
     },
     why: {
       en: 'Anyone without a bank account can open one.',
       mr: 'बँक खाते नसलेली कोणतीही व्यक्ती खाते उघडू शकते.',
+      hi: 'बिना बैंक खाते वाला कोई भी व्यक्ति खाता खोल सकता है.',
     },
     rules: [{ field: 'age', op: 'gte', value: 10 }],
     documents: {
       en: ['Aadhaar card', 'Passport photo'],
       mr: ['आधार कार्ड', 'पासपोर्ट फोटो'],
+      hi: ['आधार कार्ड', 'पासपोर्ट फोटो'],
     },
     applyUrl: 'https://pmjdy.gov.in',
     updated: '2026-10-16',
@@ -779,14 +938,16 @@ export const SCHEMES = [
   {
     id: 'pmsby',
     level: 'central',
-    name: { en: 'PM Suraksha Bima Yojana', mr: 'पीएम सुरक्षा विमा योजना' },
+    name: { en: 'PM Suraksha Bima Yojana', mr: 'पीएम सुरक्षा विमा योजना', hi: 'पीएम सुरक्षा बीमा योजना' },
     benefit: {
       en: 'Accident insurance of ₹2 lakh for just ₹20 per year.',
       mr: 'फक्त ₹20 प्रतिवर्षात ₹2 लाखांचा अपघात विमा.',
+      hi: 'सिर्फ़ ₹20 प्रति वर्ष में ₹2 लाख का दुर्घटना बीमा.',
     },
     why: {
       en: 'You have a bank account and are aged 18–70.',
       mr: 'तुमचे बँक खाते आहे व वय 18–70 आहे.',
+      hi: 'आपके पास बैंक खाता है और आयु 18–70 है.',
     },
     rules: [
       { field: 'age', op: 'gte', value: 18 },
@@ -795,6 +956,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Bank account'],
       mr: ['आधार कार्ड', 'बँक खाते'],
+      hi: ['आधार कार्ड', 'बैंक खाता'],
     },
     applyUrl: 'https://www.jansuraksha.gov.in',
     updated: '2026-10-16',
@@ -802,14 +964,16 @@ export const SCHEMES = [
   {
     id: 'pmjjby',
     level: 'central',
-    name: { en: 'PM Jeevan Jyoti Bima Yojana', mr: 'पीएम जीवन ज्योती विमा योजना' },
+    name: { en: 'PM Jeevan Jyoti Bima Yojana', mr: 'पीएम जीवन ज्योती विमा योजना', hi: 'पीएम जीवन ज्योति बीमा योजना' },
     benefit: {
       en: 'Life insurance of ₹2 lakh at a low yearly premium.',
       mr: 'कमी वार्षिक हप्त्यात ₹2 लाखांचा जीवन विमा.',
+      hi: 'कम वार्षिक प्रीमियम में ₹2 लाख का जीवन बीमा.',
     },
     why: {
       en: 'You have a bank account and are aged 18–50.',
       mr: 'तुमचे बँक खाते आहे व वय 18–50 आहे.',
+      hi: 'आपके पास बैंक खाता है और आयु 18–50 है.',
     },
     rules: [
       { field: 'age', op: 'gte', value: 18 },
@@ -818,6 +982,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Bank account'],
       mr: ['आधार कार्ड', 'बँक खाते'],
+      hi: ['आधार कार्ड', 'बैंक खाता'],
     },
     applyUrl: 'https://www.jansuraksha.gov.in',
     updated: '2026-10-16',
@@ -825,14 +990,16 @@ export const SCHEMES = [
   {
     id: 'atal-pension',
     level: 'central',
-    name: { en: 'Atal Pension Yojana', mr: 'अटल पेन्शन योजना' },
+    name: { en: 'Atal Pension Yojana', mr: 'अटल पेन्शन योजना', hi: 'अटल पेंशन योजना' },
     benefit: {
       en: 'Guaranteed monthly pension of ₹1,000–₹5,000 after age 60.',
       mr: 'वय 60 नंतर दरमहा ₹1,000–₹5,000 हमी निवृत्तीवेतन.',
+      hi: '60 वर्ष के बाद हर माह ₹1,000–₹5,000 की गारंटीड पेंशन.',
     },
     why: {
       en: 'You are aged 18–40 and want a guaranteed pension.',
       mr: 'तुमचे वय 18–40 आहे व तुम्हाला हमी निवृत्तीवेतन हवे आहे.',
+      hi: 'आपकी आयु 18–40 है और आप गारंटीड पेंशन चाहते हैं.',
     },
     rules: [
       { field: 'age', op: 'gte', value: 18 },
@@ -841,6 +1008,7 @@ export const SCHEMES = [
     documents: {
       en: ['Aadhaar card', 'Bank account', 'Mobile number'],
       mr: ['आधार कार्ड', 'बँक खाते', 'मोबाईल नंबर'],
+      hi: ['आधार कार्ड', 'बैंक खाता', 'मोबाइल नंबर'],
     },
     applyUrl: 'https://www.npscra.nsdl.co.in/scheme-details.php',
     updated: '2026-10-16',
