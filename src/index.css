@@ -1,0 +1,42 @@
+:root {
+  --saffron: #ff7a1a;
+  --saffron-dark: #e85d04;
+  --green: #138808;
+  --ink: #1a1a1a;
+  --muted: #5c5c5c;
+  --bg: #fff8f0;
+  --card: #ffffff;
+  --line: #efe3d4;
+  --ok-bg: #e8f7e6;
+  --ok-line: #1388084d;
+  --maybe-bg: #fff6e0;
+  --maybe-line: #ff7a1a4d;
+  font-family: system-ui, "Noto Sans", "Noto Sans Devanagari", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
