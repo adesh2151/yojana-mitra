@@ -70,11 +70,18 @@ npm run dev        # local dev server
 npm run build      # production build -> dist/
 npm run preview    # preview the build
 
-# Android (Capacitor)
-npm run cap:add:android
-npm run cap:sync
-npm run cap:open:android
+# Refresh the full "Browse all" catalogue from the open dataset
+npm run sync:catalog
+
+# Android APK (Capacitor) — needs an Android SDK + JDK 17+
+npm run cap:add:android          # one-time: create the native project
+npm run build && npx cap sync    # push the web build into it
+cd android && ./gradlew assembleDebug
+# -> android/app/build/outputs/apk/debug/app-debug.apk
 ```
+
+The built APK is published on the **[releases page](https://github.com/adesh2151/yojana-mitra/releases)**
+(direct download: [YojanaMitra.apk](https://github.com/adesh2151/yojana-mitra/releases/download/apk/YojanaMitra.apk)).
 
 ## Roadmap
 
