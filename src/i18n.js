@@ -41,6 +41,10 @@ export const UI = {
     en: 'This is a free helper. Final eligibility is decided by the government. Always confirm on the official website.',
     mr: 'हे एक मोफत साधन आहे. अंतिम पात्रता सरकार ठरवते. नेहमी अधिकृत संकेतस्थळावर खात्री करा.',
   },
+  source: {
+    en: 'Scheme information from myScheme (Government of India).',
+    mr: 'योजनांची माहिती myScheme (भारत सरकार) कडून.',
+  },
 }
 
 export function t(entry, lang) {

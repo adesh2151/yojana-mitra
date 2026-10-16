@@ -33,15 +33,34 @@ answer anyone can act on.
 - Browser SpeechSynthesis for voice output (free, on-device)
 - Scheme data is a local JSON-like file (`src/data/schemes.js`) — no backend in v1
 
-## Data
+## Data & attribution
 
-v1 ships a hand-cleaned seed of major Maharashtra + national schemes. The larger
-goal is ~40 top schemes, then live sync from the official
-[myScheme](https://www.myscheme.gov.in) catalogue / data.gov.in open data
-(Government Open Data Licence – India, reuse with attribution).
+Scheme information is based on the Government of India's
+[myScheme](https://www.myscheme.gov.in) platform (Digital India Corporation /
+MeitY). Per the myScheme **Copyright Policy**, *"material featured on this
+platform may be reproduced free of charge"* provided it is reproduced accurately,
+not used in a misleading manner, and **the source is prominently acknowledged** —
+which this app does in-app and here.
+
+Eligibility in this app is **simplified** for quick guidance. Each scheme links
+to its official page, which decides final eligibility. v1 ships a hand-cleaned
+set of ~40 major Maharashtra + national schemes; the roadmap is live sync from
+myScheme / [data.gov.in](https://data.gov.in) (Government Open Data Licence –
+India).
 
 > This is a free helper. **Final eligibility is decided by the government** —
 > always confirm on the official website linked in each scheme.
+
+## License
+
+App code: MIT (see `LICENSE`). Scheme content: © Government of India, reused
+under the myScheme Copyright Policy with attribution.
+
+## Live app
+
+Published as a PWA via GitHub Pages:
+**https://adesh2151.github.io/yojana-mitra/** (installable on Android from the
+browser menu → "Add to Home screen").
 
 ## Develop
 

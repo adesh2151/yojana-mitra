@@ -4,7 +4,38 @@ import { QUESTIONS } from './data/questions'
 import { SCHEMES } from './data/schemes'
 import { matchSchemes } from './engine/match'
 import { LANGS, UI, t } from './i18n'
-import { canSpeak, speak } from './speech'
+import { canListen, canSpeak, listen, speak } from './speech'
+
+// Convert Devanagari digits (०-९) to ASCII so spoken numbers parse.
+function toAsciiDigits(s) {
+  return s.replace(/[०-९]/g, (d) => '०१२३४५६७८९'.indexOf(d))
+}
+
+// Map a spoken transcript to an answer for the given question.
+// Returns the value to set, or undefined if nothing matched.
+function matchVoice(q, transcript, lang) {
+  const text = toAsciiDigits(transcript).toLowerCase()
+
+  if (q.type === 'number') {
+    const m = text.match(/\d{1,3}/)
+    return m ? Math.max(q.min, Math.min(q.max, Number(m[0]))) : undefined
+  }
+
+  if (q.type === 'boolean') {
+    if (/\b(yes|yeah|हो|होय|हा)\b/.test(text)) return true
+    if (/\b(no|nope|नाही|ना)\b/.test(text)) return false
+    return undefined
+  }
+
+  // single / multi: match transcript against each option's labels
+  const hit = q.options.find((o) => {
+    const labels = [t(o.label, lang), o.label.en, o.label.mr]
+      .filter(Boolean)
+      .map((x) => x.toLowerCase())
+    return labels.some((lab) => text.includes(lab) || lab.includes(text))
+  })
+  return hit ? hit.value : undefined
+}
 
 const SCREEN = { WELCOME: 'welcome', QUIZ: 'quiz', RESULTS: 'results', DETAIL: 'detail' }
 
@@ -82,7 +113,13 @@ export default function App() {
         )}
       </main>
 
-      <footer className="disclaimer">{t(UI.disclaimer, lang)}</footer>
+      <footer className="disclaimer">
+        {t(UI.disclaimer, lang)}
+        <br />
+        <a href="https://www.myscheme.gov.in" target="_blank" rel="noreferrer">
+          {t(UI.source, lang)}
+        </a>
+      </footer>
     </div>
   )
 }
@@ -114,6 +151,8 @@ function Quiz({ lang, step, setStep, profile, setProfile, onDone, onBackToStart 
   const q = QUESTIONS[step]
   const total = QUESTIONS.length
   const value = profile[q.id]
+  const [listening, setListening] = useState(false)
+  const [heard, setHeard] = useState('')
 
   function set(v) {
     setProfile({ ...profile, [q.id]: v })
@@ -122,6 +161,22 @@ function Quiz({ lang, step, setStep, profile, setProfile, onDone, onBackToStart 
   function toggleMulti(v) {
     const cur = Array.isArray(value) ? value : []
     set(cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v])
+  }
+
+  function startVoice() {
+    setHeard('')
+    setListening(true)
+    listen(
+      lang,
+      (transcript) => {
+        setHeard(transcript)
+        const v = matchVoice(q, transcript, lang)
+        if (v === undefined) return
+        if (q.type === 'multi') toggleMulti(v)
+        else set(v)
+      },
+      () => setListening(false),
+    )
   }
 
   function next() {
@@ -150,7 +205,19 @@ function Quiz({ lang, step, setStep, profile, setProfile, onDone, onBackToStart 
       </p>
 
       <h2 className="question">{t(q.label, lang)}</h2>
-      <SpeakBtn text={t(q.label, lang)} lang={lang} />
+      <div className="voicerow">
+        <SpeakBtn text={t(q.label, lang)} lang={lang} />
+        {canListen() && (
+          <button
+            className={`mic ${listening ? 'on' : ''}`}
+            onClick={startVoice}
+            aria-label="speak answer"
+          >
+            {listening ? '🎙️…' : '🎤'}
+          </button>
+        )}
+      </div>
+      {heard && <p className="heard">“{heard}”</p>}
 
       <div className="choices">
         {q.type === 'number' && (

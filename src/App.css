@@ -83,6 +83,35 @@
   font-weight: 600;
   margin: 10px 0 4px;
 }
+.voicerow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0 4px;
+}
+.voicerow .speak {
+  margin: 0;
+}
+.mic {
+  background: #fff;
+  border: 1.5px solid var(--green);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 1.1rem;
+}
+.mic.on {
+  background: var(--green);
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.heard {
+  color: var(--muted);
+  font-style: italic;
+  margin: 2px 0 0;
+}
 
 /* Welcome */
 .welcome {
